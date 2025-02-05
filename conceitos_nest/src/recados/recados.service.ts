@@ -1,4 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateRecadoDto } from './dto/create-recado.dto';
+import { UpdateRecadoDto } from './dto/update-recado.dto';
 import { Recado } from './entities/recado.entity';
 
 @Injectable()
@@ -8,7 +10,7 @@ export class RecadosService {
   private recados: Recado[] = [
     {
       id: 1,
-      text: 'Primeiro recado',
+      texto: 'Primeiro recado',
       de: 'João',
       para: 'Maria',
       lido: false,
@@ -16,30 +18,53 @@ export class RecadosService {
     },
   ];
 
+  throwNotFoundError(message = 'Esse recado não existe') {
+    throw new NotFoundException(message);
+  }
+
   findAll() {
     return this.recados;
   }
 
-  findOne(id: string) {
-    return this.recados.find((recado) => recado.id === +id);
+  findOne(id: number) {
+    const recado = this.recados.find((recado) => recado.id == id);
+    if (recado) return recado;
+    // throw new HttpException('Esse recado não existe', HttpStatus.NOT_FOUND);
+    this.throwNotFoundError();
   }
 
-  create(recado: Recado) {
+  create(createRecadoDto: CreateRecadoDto) {
     this.lastId++;
-    recado.id = this.lastId;
-    this.recados.push(recado);
-    return recado;
+    const id = this.lastId;
+    const novoRecado: Recado = {
+      id,
+      ...createRecadoDto,
+      lido: false,
+      data: new Date(),
+    };
+    this.recados.push(novoRecado);
+    return novoRecado;
   }
 
-  update(id: string, recado: Recado) {
-    const index = this.recados.findIndex((recado) => recado.id === +id);
-    this.recados[index] = { ...this.recados[index], ...recado };
-    return this.recados[index];
+  update(id: number, updateRecadoDto: UpdateRecadoDto) {
+    const recadoExistenteIndex = this.recados.findIndex(
+      (item) => item.id == id,
+    );
+    if (recadoExistenteIndex < 0) this.throwNotFoundError();
+    const recadoExistente = this.recados[recadoExistenteIndex];
+    this.recados[recadoExistenteIndex] = {
+      ...recadoExistente,
+      ...updateRecadoDto,
+    };
+    return this.recados[recadoExistenteIndex];
   }
 
-  remove(id: string) {
+  remove(id: number) {
+    const index = this.recados.findIndex((recado) => recado.id == id);
+    if (index < 0) this.throwNotFoundError();
+    const recado = this.recados[index];
     this.recados = this.recados.filter((recado) => recado.id !== +id);
-    return { deleted: true };
+    return recado;
   }
 
   hello() {
