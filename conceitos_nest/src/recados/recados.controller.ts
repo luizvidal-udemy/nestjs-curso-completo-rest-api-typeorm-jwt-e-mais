@@ -9,7 +9,9 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { CreateRecadoDto } from './dto/create-recado.dto';
 import { UpdateRecadoDto } from './dto/update-recado.dto';
 import { RecadosService } from './recados.service';
@@ -20,9 +22,8 @@ export class RecadosController {
 
   @HttpCode(HttpStatus.OK)
   @Get()
-  // findAll(@Query() pagination: any) {
-  findAll() {
-    return this.recadosService.findAll();
+  findAll(@Query() pagination: PaginationDto) {
+    return this.recadosService.findAll(pagination);
   }
 
   @Get(':id')
