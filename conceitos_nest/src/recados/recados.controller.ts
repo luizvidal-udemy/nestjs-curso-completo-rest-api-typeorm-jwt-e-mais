@@ -6,28 +6,40 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { AuthTokenInterceptor } from 'src/common/interceptors/auth-token.interceptor';
+import { ChangeDataInterceptor } from 'src/common/interceptors/change-data.interceptor';
+import { ErrorHandlingInterceptor } from 'src/common/interceptors/error-handling.interceptor';
+import { ReqDataParam } from 'src/common/params/req-data-param.decorator';
 import { CreateRecadoDto } from './dto/create-recado.dto';
 import { UpdateRecadoDto } from './dto/update-recado.dto';
 import { RecadosService } from './recados.service';
 
 @Controller('recados')
+@UseInterceptors(ChangeDataInterceptor, AuthTokenInterceptor)
 export class RecadosController {
   constructor(private readonly recadosService: RecadosService) {}
 
   @HttpCode(HttpStatus.OK)
   @Get()
-  findAll(@Query() pagination: PaginationDto) {
+  // @UseInterceptors(AddHeaderInterceptor)
+  // @UseInterceptors(TimingConnectionInterceptor)
+  findAll(
+    @Query() pagination: PaginationDto,
+    @ReqDataParam('url') url: string,
+  ) {
+    console.log(url);
     return this.recadosService.findAll(pagination);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  @UseInterceptors(ErrorHandlingInterceptor)
+  findOne(@Param('id') id: number) {
     return this.recadosService.findOne(id);
   }
 
@@ -37,15 +49,12 @@ export class RecadosController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateRecadoDto: UpdateRecadoDto,
-  ) {
+  update(@Param('id') id: number, @Body() updateRecadoDto: UpdateRecadoDto) {
     return this.recadosService.update(id, updateRecadoDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id') id: number) {
     return this.recadosService.remove(id);
   }
 }
