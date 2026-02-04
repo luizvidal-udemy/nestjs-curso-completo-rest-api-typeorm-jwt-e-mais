@@ -19,6 +19,7 @@ import { ReqDataParam } from 'src/common/params/req-data-param.decorator';
 import { CreateRecadoDto } from './dto/create-recado.dto';
 import { UpdateRecadoDto } from './dto/update-recado.dto';
 import { RecadosService } from './recados.service';
+import { RegexProtocol } from 'src/common/regex/regex.protocol';
 
 @Controller('recados')
 @UseInterceptors(ChangeDataInterceptor, AuthTokenInterceptor)
@@ -33,7 +34,7 @@ export class RecadosController {
     @Query() pagination: PaginationDto,
     @ReqDataParam('url') url: string,
   ) {
-    console.log(url);
+  
     return this.recadosService.findAll(pagination);
   }
 

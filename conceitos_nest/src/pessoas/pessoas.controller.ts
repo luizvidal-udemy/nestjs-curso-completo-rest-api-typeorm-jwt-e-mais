@@ -1,19 +1,23 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
 } from '@nestjs/common';
-import { PessoasService } from './pessoas.service';
+import { RecadosUtils } from 'src/recados/recados.utils';
 import { CreatePessoaDto } from './dto/create-pessoa.dto';
 import { UpdatePessoaDto } from './dto/update-pessoa.dto';
+import { PessoasService } from './pessoas.service';
 
 @Controller('pessoas')
 export class PessoasController {
-  constructor(private readonly pessoasService: PessoasService) {}
+  constructor(
+    private readonly pessoasService: PessoasService,
+    private readonly recadosUtil: RecadosUtils,
+  ) {}
 
   @Post()
   create(@Body() createPessoaDto: CreatePessoaDto) {
@@ -22,6 +26,8 @@ export class PessoasController {
 
   @Get()
   findAll() {
+    console.log(this.recadosUtil.inverteString('luiz'));
+    console.log(this.recadosUtil.inverteString('luiz'));
     return this.pessoasService.findAll();
   }
 

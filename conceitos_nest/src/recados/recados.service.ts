@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { CreateRecadoDto } from './dto/create-recado.dto';
 import { UpdateRecadoDto } from './dto/update-recado.dto';
 import { Recado } from './entities/recado.entity';
+import { RecadosUtils } from './recados.utils';
 
 @Injectable()
 export class RecadosService {
@@ -13,6 +14,7 @@ export class RecadosService {
     @InjectRepository(Recado)
     private readonly recadoRepository: Repository<Recado>,
     private readonly PessoasService: PessoasService,
+    private readonly recadoUtils: RecadosUtils,
   ) {}
 
   throwNotFoundError(message = 'Esse recado não existe') {
@@ -20,6 +22,7 @@ export class RecadosService {
   }
 
   async findAll(paginationDto?: PaginationDto) {
+    console.log(this.recadoUtils.inverteString(`Luiz`))
     const { limit = 10, offset = 0 } = paginationDto;
 
     const recados = await this.recadoRepository.find({
